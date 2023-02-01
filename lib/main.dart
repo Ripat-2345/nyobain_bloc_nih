@@ -1,10 +1,15 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nyobain_bloc_nih/bloc/counter_bloc.dart';
+import 'package:nyobain_bloc_nih/cubit/counter_cubit.dart';
 
-void main() {
+void main() async {
+  // final coba = CounterBloc();
+
+  // print(coba.state);
+  // coba.increment();
+  // Future.delayed(Duration(seconds: 1));
+  // print(coba.state);
   runApp(const MyApp());
 }
 
@@ -14,8 +19,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CounterCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => CounterCubit()),
+        BlocProvider(create: (context) => CounterBloc()),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -45,24 +53,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            BlocConsumer<CounterCubit, int>(
-              listener: (context, state) {},
-              builder: (context, state) => Text(
-                context.read<CounterCubit>().state.toString(),
-                style: Theme.of(context).textTheme.headline4,
-              ),
-            ),
-          ],
+        child: BlocBuilder<CounterBloc, int>(
+          builder: (context, state) {
+            return Text(state.toString());
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.read<CounterCubit>().increment(),
+        onPressed: () => context.read<CounterBloc>().add(CounterEvent()),
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
